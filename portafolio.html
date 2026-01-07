@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Nombre | Portafolio de Diseño Gráfico & Ilustración</title>
+    <meta name="description" content="Portafolio de Jormali, diseñador gráfico e ilustrador apasionado por la comunicación visual, la identidad de marca y la creación de ilustraciones que cuentan una historia.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados y animaciones */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0d0d0d; /* Casi negro */
+            color: #e0e0e0; /* Gris muy claro */
+        }
+
+        .accent-text {
+            color: #38bdf8; /* Azul cielo */
+        }
+
+        /* Animación para aparecer elementos con el scroll */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        /* Ocultar elementos para la animación */
+        .reveal {
+            opacity: 0;
+        }
+        
+        /* Estilo de la barra de navegación al hacer scroll */
+        .scrolled {
+            background-color: rgba(13, 13, 13, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #262626;
+        }
+
+        /* Estilo para las tarjetas de proyectos */
+        .project-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem; /* 8px */
+            background-color: #1a1a1a;
+        }
+
+        .project-card img {
+            transition: transform 0.4s ease-out;
+        }
+
+        .project-card:hover img {
+            transform: scale(1.05) translateY(-8px);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem; /* 24px */
+            opacity: 0;
+            transition: opacity 0.4s ease-out;
+        }
+
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+
+        .project-overlay h3, .project-overlay p {
+            transform: translateY(15px);
+            transition: transform 0.4s ease-out;
+        }
+
+        .project-card:hover .project-overlay h3,
+        .project-card:hover .project-overlay p {
+            transform: translateY(0);
+        }
+        
+        .project-overlay p {
+           transition-delay: 0.05s;
+        }
+
+        /* Estilos para el Lightbox (Modal de imagen) */
+        #lightbox {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #lightbox.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #lightbox-image {
+            animation: zoomIn 0.3s ease-in-out;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Efecto de levantamiento para imágenes en la galería del lightbox */
+        #lightbox-gallery-content > img {
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+
+        #lightbox-gallery-content > img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            position: relative; /* Requerido para que z-index funcione */
+        }
+
+
+        /* Mejora de accesibilidad: Respetar las preferencias de movimiento del usuario */
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-smooth {
+                scroll-behavior: auto;
+            }
+            *, *::before, *::after {
+                animation-duration: 1ms !important;
+                transition-duration: 1ms !important;
+            }
+        }
+
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header / Barra de Navegación -->
+    <header id="main-header" class="fixed w-full top-0 z-50 transition-all duration-300">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#inicio" class="text-2xl font-bold tracking-wider">[TU LOGO]</a>
+            <div class="hidden md:flex space-x-8 font-semibold">
+                <a href="#sobre-mi" class="text-gray-300 hover:text-sky-400 transition">Sobre Mí</a>
+                <a href="#portafolio" class="text-gray-300 hover:text-sky-400 transition">Portafolio</a>
+                <a href="#contacto" class="text-gray-300 hover:text-sky-400 transition">Contacto</a>
+            </div>
+            <!-- Botón para móvil -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-300 focus:outline-none" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="mobile-menu">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <!-- Menú para Móvil (Oculto por defecto) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/95 backdrop-blur-sm">
+            <a href="#sobre-mi" class="block text-center py-3 px-4 text-sm text-gray-200 hover:bg-gray-800 transition">Sobre Mí</a>
+            <a href="#portafolio" class="block text-center py-3 px-4 text-sm text-gray-200 hover:bg-gray-800 transition">Portafolio</a>
+            <a href="#contacto" class="block text-center py-3 px-4 text-sm text-gray-200 hover:bg-gray-800 transition">Contacto</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sección de Inicio (Hero) -->
+        <section id="inicio" class="relative min-h-screen flex items-center justify-center text-center">
+            <!-- Capa de Imagen de Fondo -->
+            <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center" style="background-image: url('./imagenes/fondo.jpeg');"></div>
+            <!-- Capa de Superposición Oscura -->
+            <div class="absolute top-0 left-0 w-full h-full bg-black/60"></div>
+            <div class="container mx-auto px-6 relative z-10">
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter">
+                    Jormali
+                </h1>
+                <p class="mt-4 text-lg md:text-xl text-gray-400 max-w-3xl mx-auto font-light">
+                    Diseñador Gráfico & Ilustrador
+                </p>
+                <a href="#portafolio" class="mt-8 inline-block border-2 border-sky-400 hover:bg-sky-400 text-sky-400 hover:text-gray-900 font-semibold py-3 px-8 rounded-full transition-colors duration-300">
+                    Ver mi trabajo
+                </a>
+            </div>
+        </section>
+
+        <!-- Sección Sobre Mí -->
+        <section id="sobre-mi" class="py-20 md:py-32">
+            <div class="container mx-auto px-6 reveal">
+                <div class="grid md:grid-cols-5 gap-12 items-center">
+                    <div class="md:col-span-2">
+                        <img src="./imagenes/DIBUJO1.png" alt="Foto de Jormali" class="rounded-lg shadow-2xl mx-auto">
+                    </div>
+                    <div class="md:col-span-3">
+                        <h2 class="text-3xl font-bold mb-4">Hola, soy <span class="accent-text">Jormali</span></h2>
+                        <p class="text-gray-300 mb-4 text-lg leading-relaxed">
+                            Apasionado por la comunicación visual, me especializo en crear identidades de marca e ilustraciones que cuentan una historia. Mi enfoque combina la creatividad artística con una estrategia de diseño sólida para entregar resultados que no solo se ven bien, sino que también funcionan.
+                        </p>
+                        <p class="text-gray-300 mb-6 text-lg leading-relaxed">
+                            Me encanta enfrentar nuevos desafíos creativos y colaborar en proyectos que dejen una marca positiva.
+                        </p>
+                        <h3 class="text-xl font-semibold mb-4">Mis Herramientas Principales:</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="border border-gray-700 text-sm font-medium px-4 py-2 rounded-md">Adobe Illustrator</span>
+                            <span class="border border-gray-700 text-sm font-medium px-4 py-2 rounded-md">Adobe Photoshop</span>
+                            <span class="border border-gray-700 text-sm font-medium px-4 py-2 rounded-md">Figma</span>
+                            <span class="border border-gray-700 text-sm font-medium px-4 py-2 rounded-md">Procreate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Portafolio -->
+        <section id="portafolio" class="relative py-20 md:py-32">
+            <!-- Capa de Imagen de Fondo -->
+            <!-- Aquí usamos tu imagen 'FONDO 2'. Asumo que es un .jpeg, si es .png o .webp, solo cambia la extensión -->
+            <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-fixed" style="background-image: url('./imagenes/FONDO 2.jpeg');"></div>
+            <!-- Capa de Superposición Oscura para legibilidad -->
+            <div class="absolute top-0 left-0 w-full h-full bg-black/80"></div>
+
+            <div class="container mx-auto px-6 reveal relative z-10">
+                <div class="text-center mb-12 ">
+                    <h2 class="text-4xl font-bold">Portafolio</h2>
+                    <p class="text-gray-400 mt-2 font-light">Una selección de mis trabajos recientes.</p>
+                </div>
+                
+                <!-- Contenedor de Proyectos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Proyecto 1: Ahora es un botón con data-images -->
+                    <button type="button" class="block project-link text-left" data-images="./imagenes/nuevo.jpeg,./imagenes/marron2.jpg,./imagenes/marron1.jpg,./imagenes/verde1.jpg,./imagenes/verde2.jpg" data-layout="md:col-span-3 md:row-span-4,md:col-span-2 md:row-span-2,md:col-span-2 md:row-span-2,md:col-span-2 md:row-span-2,md:col-span-2 md:row-span-2">
+                        <div class="project-card h-full">
+                            <img class="w-full h-80 object-cover" src="./imagenes/tu-proyecto-1.jpeg" alt="Imagen del Proyecto de Branding para Café">
+                            <div class="project-overlay">
+                                <h3 class="text-2xl font-bold text-white">Diseños de Blusas</h3>
+                                <p class="text-gray-300">Diseño Gráfico</p>
+                            </div>
+                        </div>
+                    </button>
+                    <!-- Proyecto 2: Ahora es un botón con data-images -->
+                    <button type="button" class="block project-link text-left" data-images="./imagenes/Chibi1.png" data-layout="md:col-span-8 md:row-span-6">
+                        <div class="project-card h-full">
+                            <img class="w-full h-80 object-cover" src="./imagenes/CHIBI1.png" alt="Dibujos Chibis">
+                            <div class="project-overlay">
+                                <h3 class="text-2xl font-bold text-white">Dibujos Chibis</h3>
+                                <p class="text-gray-300">Ilustración</p>
+                            </div>
+                        </div>
+                    </button>
+                    <!-- Proyecto 3: Ahora es un botón con data-images -->
+                    <button type="button" class="block project-link text-left" data-images="./imagenes/tu-proyecto-2.jpeg,https://placehold.co/800x600/1a1a1a/fb923c?text=Logo,https://placehold.co/800x600/1a1a1a/fb923c?text=Menú">
+                        <div class="project-card h-full">
+                            <img class="w-full h-80 object-cover" src="./imagenes/tu-proyecto-2.jpeg" alt="Branding de Comida Rapida">
+                            <div class="project-overlay">
+                                <h3 class="text-2xl font-bold text-white">Branding de Comida Rapida</h3>
+                                <p class="text-gray-300">Branding</p>
+                            </div>
+                        </div>
+                    </button>
+                     <!-- Proyecto 4: Ahora es un botón con data-images -->
+                    <button type="button" class="block project-link text-left" data-images="https://placehold.co/600x400/1a1a1a/fb923c?text=Proyecto+4">
+                        <div class="project-card h-full">
+                            <img class="w-full h-80 object-cover" src="https://placehold.co/600x400/1a1a1a/fb923c?text=Proyecto+4" alt="Imagen del Proyecto 4">
+                            <div class="project-overlay">
+                                <h3 class="text-2xl font-bold text-white">Nombre del Proyecto 4</h3>
+                                <p class="text-gray-300">Diseño Editorial</p>
+                            </div>
+                        </div>
+                    </button>
+                    <!-- Proyecto 5: Ahora es un botón con data-images -->
+                    <button type="button" class="block project-link text-left" data-images="https://placehold.co/600x400/1a1a1a/f472b6?text=Proyecto+5,https://placehold.co/800x600/1a1a1a/f472b6?text=Variación">
+                        <div class="project-card h-full">
+                            <img class="w-full h-80 object-cover" src="https://placehold.co/600x400/1a1a1a/f472b6?text=Proyecto+5" alt="Imagen del Proyecto 5">
+                            <div class="project-overlay">
+                                <h3 class="text-2xl font-bold text-white">Nombre del Proyecto 5</h3>
+                                <p class="text-gray-300">Ilustración Digital</p>
+                            </div>
+                        </div>
+                    </button>
+                    <!-- Proyecto 6: Ahora es un botón con data-images -->
+                    <button type="button" class="block project-link text-left" data-images="https://placehold.co/600x400/1a1a1a/a3e635?text=Proyecto+6">
+                        <div class="project-card h-full">
+                            <img class="w-full h-80 object-cover" src="https://placehold.co/600x400/1a1a1a/a3e635?text=Proyecto+6" alt="Imagen del Proyecto 6">
+                            <div class="project-overlay">
+                                <h3 class="text-2xl font-bold text-white">Nombre del Proyecto 6</h3>
+                                <p class="text-gray-300">Diseño de Packaging</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Contacto -->
+        <section id="contacto" class="py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center reveal">
+                <h2 class="text-4xl font-bold">Creemos algo juntos</h2>
+                <p class="text-gray-400 mt-4 mb-8 max-w-2xl mx-auto font-light">
+                    Estoy disponible para proyectos freelance y colaboraciones. Si tienes una idea en mente, me encantaría escucharla.
+                </p>
+                <a href="mailto:tuemail@dominio.com" class="text-2xl font-semibold accent-text hover:brightness-125 transition">
+                    tuemail@dominio.com
+                </a>
+                <div class="flex justify-center space-x-6 mt-10">
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition" aria-label="Visita mi perfil de Behance">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M22.48 7.127h-4.33V4.792h4.33v2.335zm-4.33 3.39h4.33v2.336h-4.33v-2.336zM15.483.512H.51v22.976h14.973c4.143 0 8.007-3.06 8.007-7.614 0-4.99-4.3-7.58-8.007-7.854zm-2.133 4.29h-3.32v3.31h3.32a1.65 1.65 0 1 0 0-3.31zm0 8.32h-3.32v3.3h3.32a1.65 1.65 0 1 0 0-3.3z"/></svg>
+                    </a>
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition" aria-label="Visita mi perfil de LinkedIn">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    </a>
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition" aria-label="Visita mi perfil de Instagram">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black/50 border-t border-gray-900">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500">
+            <p>&copy; <span id="year"></span> Jormali. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal para ver imágenes -->
+    <div id="lightbox" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[999] hidden p-4 transition-opacity duration-300">
+        <!-- Contenedor de la galería tipo mosaico (grid) -->
+        <div id="lightbox-gallery-content" class="relative w-full h-full max-w-6xl overflow-y-auto p-4 grid grid-cols-4 md:grid-cols-10 gap-4 grid-flow-dense" style="grid-auto-rows: 100px;">
+        </div>
+        <!-- Botón de cierre -->
+        <button id="lightbox-close" class="absolute top-6 right-8 text-white/80 hover:text-white transition text-5xl font-bold leading-none" aria-label="Cerrar vista ampliada">&times;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar el año en el footer
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // Lógica para la barra de navegación con scroll
+            const header = document.getElementById('main-header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+            
+            // Lógica para animaciones al hacer scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-up');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            const elementsToReveal = document.querySelectorAll('.reveal');
+            elementsToReveal.forEach(el => {
+                observer.observe(el);
+            });
+
+            // Lógica para el menú móvil
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+
+            mobileMenuButton.addEventListener('click', function() {
+                const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                mobileMenu.classList.toggle('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+            });
+
+            // Cerrar el menú móvil al hacer clic en un enlace
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+
+            // --- INICIO: Lógica para el Lightbox ---
+            const projectLinks = document.querySelectorAll('.project-link');
+            const lightbox = document.getElementById('lightbox');
+            const galleryContent = document.getElementById('lightbox-gallery-content');
+            const lightboxClose = document.getElementById('lightbox-close');
+
+            projectLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const imagesAttr = this.getAttribute('data-images');
+                    const layoutAttr = this.getAttribute('data-layout');
+
+                    if (imagesAttr) {
+                        const images = imagesAttr.split(',');
+                        const layouts = layoutAttr ? layoutAttr.split(',') : [];
+                        
+                        // Limpiar galería anterior
+                        galleryContent.innerHTML = '';
+
+                        // Poblar la galería con las nuevas imágenes
+                        images.forEach((imgSrc, index) => {
+                            const img = document.createElement('img');
+                            img.src = imgSrc.trim();
+                            img.alt = "Detalle del proyecto";
+                            img.className = `w-full h-full object-cover rounded-lg ${layouts[index] ? layouts[index].trim() : 'col-span-1'}`;
+                            galleryContent.appendChild(img);
+                        });
+
+                        lightbox.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            // Función para cerrar el lightbox
+            function closeLightbox() {
+                lightbox.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            lightboxClose.addEventListener('click', closeLightbox);
+
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+            // --- FIN: Lógica para el Lightbox ---
+        });
+    </script>
+
+</body>
+</html>
